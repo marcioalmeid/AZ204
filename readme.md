@@ -20,7 +20,10 @@ func start
 # To publish
 az login
 func azure functionapp publish fnmamappeastdev001
-
-  
+ 
 # Modifique local.settings.json
    "FUNCTIONS_WORKER_RUNTIME": "dotnetIsolated"  
+
+# Remove resource group
+az group list   
+az group delete --name   fnmamappeastdev001
