@@ -1,6 +1,9 @@
 package mamflix;
 
 import com.azure.cosmos.*;
+import com.azure.cosmos.models.CosmosContainerProperties;
+import com.azure.cosmos.models.CosmosContainerResponse;
+import com.azure.cosmos.models.CosmosDatabaseResponse;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.google.gson.Gson;
 import com.microsoft.azure.functions.*;
@@ -33,31 +36,38 @@ public class MovieFunction {
                     .key(key)
                     .buildClient();
 
-            CosmosDatabase database = client.getDatabase("mamFlixDB");
-            CosmosContainer container = database.getContainer("movies");
+             // Create database and container if they do not exist
+            CosmosDatabaseResponse databaseResponse = client.createDatabaseIfNotExists("mamFlixDB");
+            CosmosDatabase database = client.getDatabase(databaseResponse.getProperties().getId());
+            CosmosContainerResponse containerResponse = database.createContainerIfNotExists(
+                    new CosmosContainerProperties("movies", "/id"));
+            CosmosContainer container = database.getContainer(containerResponse.getProperties().getId());
 
             String requestBody = request.getBody().orElse("");
             context.getLogger().info("Request body: " + requestBody);
             Movie movie = new Gson().fromJson(requestBody, Movie.class);
             context.getLogger().info("Movie ID: " + movie.getId());
             context.getLogger().info("Movie title: " + movie.getTitle());
-            context.getLogger().warning( "Movie VIDEO: " + movie.getVideo());
-            context.getLogger().warning( "Movie thumb: " + movie.getThumb());
-
 
             CosmosItemResponse<Movie> response = container.createItem(movie);
             context.getLogger().info("Item created with request charge: " + response.getRequestCharge());
+
             return request.createResponseBuilder(HttpStatus.OK)
-            .body("Movie saved successfully.")
-            .build();
-           
+                    .body("Movie saved successfully.")
+                    .build();
+        } catch (CosmosException e) {
+            context.getLogger().severe("Error saving movie: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while saving the movie.")
+                    .build();
         } catch (Exception e) {
-            e.printStackTrace();
+            context.getLogger().severe("Error processing request: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while processing the request.")
+                    .build();
         }
         
-        return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred while saving the movie.")
-                .build();
+        
         
     }
 
