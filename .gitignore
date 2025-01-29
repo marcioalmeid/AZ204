@@ -1,1 +1,6 @@
 agent-devops/.agent
+/agent-devops
+/mam-flix/azurite
+mam-flix/fnPostDatabase/fnmamflix/local.settings.json
+mam-flix/fnPostDatabase/fnmamflix/target/azure-functions/fnmamflix-20250128205041036/local.settings.json
+/mam-flix/fnPostDatabase/fnmamflix/target

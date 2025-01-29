@@ -1,0 +1,7 @@
+curl --location 'http://localhost:7072/api/fnPostDataStorage' \
+--header 'file-type: videos' \
+--form 'file=@"/Users/marcio/Downloads/Architecture Styles.jpeg"'
+
+
+
+ 
