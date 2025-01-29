@@ -4,3 +4,4 @@ agent-devops/.agent
 mam-flix/fnPostDatabase/fnmamflix/local.settings.json
 mam-flix/fnPostDatabase/fnmamflix/target/azure-functions/fnmamflix-20250128205041036/local.settings.json
 /mam-flix/fnPostDatabase/fnmamflix/target
+.DS_Store
