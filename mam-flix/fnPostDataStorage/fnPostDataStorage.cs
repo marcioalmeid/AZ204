@@ -43,14 +43,7 @@ namespace fnPostDataStorage
                 var form = await req.ReadFormAsync();
                 var file = form.Files["file"];
     
-    
-                // using (var memoryStream = new MemoryStream())
-                // {
-                //     await req.Body.CopyToAsync(memoryStream);
-                //     byte[] fileBytes = memoryStream.ToArray();
-                //     // Process the fileBytes as needed
-                //     log.LogInformation($"File size: {fileBytes.Length}");
-                // }
+     
                 string connectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
                 string containerName = fileType;
                 BlobClient blobClient = new BlobClient(connectionString, containerName, file.FileName);

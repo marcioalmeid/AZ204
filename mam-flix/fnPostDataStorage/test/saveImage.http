@@ -5,3 +5,7 @@ curl --location 'http://localhost:7072/api/fnPostDataStorage' \
 
 
  
+curl --location 'http://localhost:7072/api/fnPostDataStorage'  --header 'file-type: images'     --form 'file=@"/Users/marcio/Downloads/Architecture Styles.jpeg"'
+
+
+curl --location 'http://localhost:7072/api/fnPostDataStorage' --header 'file-type: videos' --form 'file=@"/Users/marcio/Movies/2025-01-29 11-15-08.mp4"'

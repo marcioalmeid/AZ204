@@ -2,6 +2,10 @@ package mamflix;
 
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosItemResponse;
+import com.azure.cosmos.models.PartitionKey;
+import com.azure.cosmos.util.CosmosPagedIterable;
+import com.azure.cosmos.models.CosmosQueryRequestOptions;
+
 import com.google.gson.Gson;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.*;
@@ -10,16 +14,19 @@ import java.util.Optional;
 
 public class MovieFunction {
 
-    @FunctionName("SaveMovie")
+    @FunctionName("GetMovie")
     public HttpResponseMessage run(
             @HttpTrigger(
                 name = "req",
-                methods = {HttpMethod.POST},
+                methods = {HttpMethod.GET},
+                route = "movies/{id}",
                 authLevel = AuthorizationLevel.ANONYMOUS)
                 HttpRequestMessage<Optional<String>> request,
+                @BindingName("id") String id,
+
             final ExecutionContext context) {
 
-        context.getLogger().info("Processing movie save request. V3");
+                context.getLogger().info("Processing request to get movie with ID: " + id);
 
         String cosmosDBConnectionString = System.getenv("CosmosDBConnection");
         try {
@@ -36,27 +43,45 @@ public class MovieFunction {
             CosmosDatabase database = client.getDatabase("mamFlixDB");
             CosmosContainer container = database.getContainer("movies");
 
-            String requestBody = request.getBody().orElse("");
-            context.getLogger().info("Request body: " + requestBody);
-            Movie movie = new Gson().fromJson(requestBody, Movie.class);
-            context.getLogger().info("Movie ID: " + movie.getId());
-            context.getLogger().info("Movie title: " + movie.getTitle());
-            context.getLogger().warning( "Movie VIDEO: " + movie.getVideo());
-            context.getLogger().warning( "Movie thumb: " + movie.getThumb());
+                 // Consultar o item pelo ID
+        try {
+
+            String query = "SELECT * FROM c  ";
+            CosmosQueryRequestOptions options = new CosmosQueryRequestOptions();
+            CosmosPagedIterable<Movie> movies = container.queryItems(query, options, Movie.class);
+
+            // Iterar sobre os resultados e logar os itens
+            for (Movie movie : movies) {
+                System.out.println("Movie ID: " + movie.getId());
+                System.out.println("Title: " + movie.getTitle());
+                System.out.println("Year: " + movie.getYear());
+                System.out.println("Video: " + movie.getVideo());
+                System.out.println("Thumb: " + movie.getThumb());
+                System.out.println("---------------------------");
+            }
 
 
-            CosmosItemResponse<Movie> response = container.createItem(movie);
-            context.getLogger().info("Item created with request charge: " + response.getRequestCharge());
+            CosmosItemResponse<Movie> itemResponse = container.readItem(id, new PartitionKey(id), Movie.class);
+            Movie movie = itemResponse.getItem();
+
             return request.createResponseBuilder(HttpStatus.OK)
-            .body("Movie saved successfully.")
-            .build();
+                    .body(movie)
+                    .build();
+        } catch (CosmosException e) {
+            context.getLogger().severe("Error retrieving movie: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .body("Movie not found")
+                    .build();
+        }
+
+           
            
         } catch (Exception e) {
             e.printStackTrace();
         }
         
         return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An error occurred while saving the movie.")
+                .body("An error occurred while loading the movie.")
                 .build();
         
     }
