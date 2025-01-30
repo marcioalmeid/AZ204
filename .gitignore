@@ -9,3 +9,7 @@ mam-flix/fnPostDatabase/fnmamflix/target/azure-functions/fnmamflix-2025012820504
 mam-flix/fnGetDatabase/fnmamflix/local.settings.json
 /mam-flix/fnGetAllMovies/fnmamflix/target
 mam-flix/fnGetAllMovies/fnmamflix/local.settings.json
+/mam-flix/fnSaveMovie/fnmamflix/target
+/mam-flix/fnGetMovieDetails/fnmamflix/target
+mam-flix/fnGetMovieDetails/fnmamflix/local.settings.json
+mam-flix/fnSaveMovie/fnmamflix/local.settings.json

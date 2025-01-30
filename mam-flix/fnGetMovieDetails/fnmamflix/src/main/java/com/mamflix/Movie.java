@@ -1,4 +1,4 @@
- package mamflix;
+ package com.mamflix;
 
 public class Movie {
     private String id;
@@ -25,5 +25,6 @@ public class Movie {
     public int getYear() { return year; }
     public String getThumb() { return thumb; }
     public void setThumb(String thumb) { this.thumb = thumb; }
+    
     public void setYear(int year) { this.year = year; }
 }

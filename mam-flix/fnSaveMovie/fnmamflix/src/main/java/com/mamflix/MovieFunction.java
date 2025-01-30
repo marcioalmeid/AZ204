@@ -1,4 +1,4 @@
-package mamflix;
+package com.mamflix;
 
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosContainerProperties;

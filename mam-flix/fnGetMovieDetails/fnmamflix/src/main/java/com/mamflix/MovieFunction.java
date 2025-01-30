@@ -1,4 +1,4 @@
-package mamflix;
+package com.mamflix;
 
 import com.azure.cosmos.*;
 import com.azure.cosmos.models.CosmosItemResponse;
@@ -6,7 +6,6 @@ import com.azure.cosmos.models.PartitionKey;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 
-import com.google.gson.Gson;
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.*;
 
