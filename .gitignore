@@ -7,3 +7,5 @@ mam-flix/fnPostDatabase/fnmamflix/target/azure-functions/fnmamflix-2025012820504
 .DS_Store
 /mam-flix/fnGetDatabase/fnmamflix/target
 mam-flix/fnGetDatabase/fnmamflix/local.settings.json
+/mam-flix/fnGetAllMovies/fnmamflix/target
+mam-flix/fnGetAllMovies/fnmamflix/local.settings.json

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        .movie-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .movie-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 200px;
+        }
+        .movie-card img {
+            width: 100%;
+            height: auto;
+        }
+        .movie-card .content {
+            padding: 15px;
+        }
+        .movie-card .title {
+            font-size: 18px;
+            margin: 0 0 10px;
+        }
+        .movie-card .description {
+            font-size: 14px;
+            color: #555;
+        }
+        .movie-details {
+            display: none;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Movie List</h1>
+    <div class="movie-list">
+        <!-- Movie cards will be dynamically inserted here -->
+    </div>
+    <div class="movie-details">
+        <!-- Movie details will be displayed here -->
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Movie Details</h2>
+            <div id="movieDetails">Some details about the movie...</div>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+    async function fetchMovies() {
+        const response = await fetch('http://localhost:7074/api/movies');
+        const movies = await response.json();
+        const movieList = document.querySelector('.movie-list');
+        
+        movies.forEach(movie => {
+            const movieCard = document.createElement('div');
+            movieCard.classList.add('movie-card');
+            
+            const movieImage = document.createElement('img');
+            movieImage.src = movie.thumb;
+            movieImage.alt = movie.title;
+            movieCard.appendChild(movieImage);
+            
+            const content = document.createElement('div');
+            content.classList.add('content');
+            
+            const title = document.createElement('h2');
+            title.classList.add('title');
+            title.textContent = movie.title;
+            content.appendChild(title);
+            
+            const description = document.createElement('a');
+            description.classList.add('description');
+            description.href = '#';
+            description.textContent = 'View Details';
+            description.addEventListener('click', (event) => {
+                event.preventDefault();
+                fetchMovieDetails(movie.id);
+            });
+            content.appendChild(description);
+            
+            movieCard.appendChild(content);
+            movieList.appendChild(movieCard);
+        });
+    }
+
+    async function fetchMovieDetails(movieId) {
+        const response = await fetch(`http://localhost:7073/api/movies/${movieId}`);
+        const movie = await response.json();
+        const movieDetails = document.getElementById('movieDetails');
+        
+        movieDetails.innerHTML = `
+            <h2>${movie.title}</h2>
+            <p><strong>Release Date:</strong> ${movie.year}</p>
+            <p><a href="${movie.video}" target="_blank" onclick="event.preventDefault(); playVideo('${movie.video}');">Watch Video</a></p>
+        `;
+        openModal();
+    }
+
+    function playVideo(videoUrl) {
+        const videoPlayer = document.createElement('video');
+        videoPlayer.src = videoUrl;
+        videoPlayer.controls = true;
+        videoPlayer.autoplay = true;
+        const movieDetails = document.getElementById('movieDetails');
+        movieDetails.innerHTML = '';
+        movieDetails.appendChild(videoPlayer);
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchMovies);
+
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Function to open the modal
+    function openModal() {
+        modal.style.display = "block";
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        modal.style.display = "none";
+    }
+
+    // Close the modal when the user clicks anywhere outside of it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
